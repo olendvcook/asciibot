@@ -7,6 +7,7 @@ print im.size
 
 im = ImageOps.grayscale(im)
 
+#this size puts us at 8125 characters and a good size for reddit comments
 im = im.resize((120,65), Image.ANTIALIAS)
 
 #so the ascii looked really good when zoomed out so i wanted to keep it as an option
