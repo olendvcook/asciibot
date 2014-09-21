@@ -3,7 +3,7 @@ from PIL import ImageOps
 
 def create_ascii():
 	# Open the image
-	im = Image.open('../resources/picture.png')
+	im = Image.open('../resources/picture.jpg')
 
 	#Grey the image
 	im = ImageOps.grayscale(im)

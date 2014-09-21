@@ -1,6 +1,6 @@
 import praw
 import requests
-from bs4 import BeautifulSoup
+from collections import deque
 
 from convertascii import create_ascii
 
@@ -13,6 +13,21 @@ reddit.login()
 
 cache = deque(maxlen=69)
 
+def downloadImage(imageUrl, localFileName):
+	directory = '../resources/'
+	print imageUrl
+	response = requests.get(imageUrl)
+	
+	if response.status_code == 200:
+		print 'Downloading %s...' % localFileName
+		localFileName = directory + localFileName
+		with open(localFileName, 'wb') as fh:
+			for chunk in response.iter_content(1):
+				fh.write(chunk)
+		print 'Download complete!'
+	else:
+		print 'Problem downloading - status code %s' % response.status_code
+
 # TODO: change after dev
 # How many things we will receive
 #thing_limit = 2
@@ -22,22 +37,13 @@ cache = deque(maxlen=69)
 subreddit = reddit.get_subreddit('botascii')
 for submission in subreddit.get_new(limit=1):
 	if 'http://imgur.com/a/' in submission.url:
+		# html = requests.get(submission.url).text
+		# print html		
 		continue
 	elif 'http://i.imgur.com/' in submission.url:
-		html = requests.get(submission.url).text
-		print html
-		
+		downloadImage(submission.url, 'picture.jpg')
 
-def downloadImage(imageUrl, localFileName):
-	response = requests.get(imageUrl)
-	
-	if response.status_code == 200:
-		print 'Downloading %s...' % localFileName
-		with open(localFileName, 'wb') as fh:
-			for chunk in response.iter_content(4096):
-				fh.write(chunk)
-	else:
-		print 'Problem downloading - status code %s' 
-		       % response.status_code
+create_ascii()
+
 
 
