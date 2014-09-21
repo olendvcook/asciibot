@@ -1,9 +1,9 @@
 from PIL import Image
 from PIL import ImageOps
 
-def create_ascii():
+def create_ascii(imagePath):
 	# Open the image
-	im = Image.open('../resources/picture.jpg')
+	im = Image.open(imagePath)
 
 	#Grey the image
 	im = ImageOps.grayscale(im)
@@ -63,3 +63,5 @@ def create_ascii():
 
 	# Close the file handler
 	fh.close()
+	
+	#TODO: delete image

@@ -27,6 +27,7 @@ def downloadImage(imageUrl, localFileName):
 		print 'Download complete!'
 	else:
 		print 'Problem downloading - status code %s' % response.status_code
+	return localFileName
 
 # TODO: change after dev
 # How many things we will receive
@@ -41,9 +42,9 @@ for submission in subreddit.get_new(limit=1):
 		# print html		
 		continue
 	elif 'http://i.imgur.com/' in submission.url:
-		downloadImage(submission.url, 'picture.jpg')
+		imagePath = downloadImage(submission.url, submission.url.split('/')[-1].split('#')[0].split('?')[0])
 
-create_ascii()
+		create_ascii(imagePath)
 
 
 
