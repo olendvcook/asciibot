@@ -1,8 +1,11 @@
 import praw
 import requests
 from collections import deque
+from time import sleep
 
 from convertascii import create_ascii
+
+# TODO: Multi-threaded to check if previous ascii posts have been downvoted, if so delete them
 
 # Required for reddit, description of who this is
 user_agent = ("ASCII Art converter 1.0 by /u/olendvcook, /u/fofofosho "
@@ -29,22 +32,37 @@ def downloadImage(imageUrl, localFileName):
 		print 'Problem downloading - status code %s' % response.status_code
 	return localFileName
 
-# TODO: change after dev
-# How many things we will receive
-#thing_limit = 2
-
 # Main loop
-#while True:
-subreddit = reddit.get_subreddit('botascii')
-for submission in subreddit.get_new(limit=1):
-	if 'http://imgur.com/a/' in submission.url:
-		# html = requests.get(submission.url).text
-		# print html		
-		continue
-	elif 'http://i.imgur.com/' in submission.url:
-		imagePath = downloadImage(submission.url, submission.url.split('/')[-1].split('#')[0].split('?')[0])
+while True:
+	subreddit = reddit.get_subreddit('botascii')
+	
+	# TODO: add functionality to listen for ascii bot's name in comments
+	for submission in subreddit.get_new():
+		commentFlag = False
 
-		create_ascii(imagePath)
+		if submission.id in cache:
+			continue
 
+		if 'http://imgur.com/a/' in submission.url:
+			# add id into cache
+			# html = requests.get(submission.url).text
+			# print html
+			# update comment flag		
+			continue
+		elif 'http://i.imgur.com/' in submission.url:
+			cache.append(submission.id)
+			imagePath = downloadImage(submission.url, submission.url.split('/')[-1].split('?')[0])
 
+			create_ascii(imagePath)
 
+			commentFlag = True			
+		
+		if commentFlag:
+			# Write out ASCII to post as code
+			with open('asciidata', 'r') as fh:
+				text = fh.read()
+			submission.add_comment(text)
+			print 'Posted ASCII!!!'
+
+		print 'Sleep for minute..'
+		sleep(60)

@@ -1,3 +1,5 @@
+import os
+
 from PIL import Image
 from PIL import ImageOps
 
@@ -5,11 +7,12 @@ def create_ascii(imagePath):
 	# Open the image
 	im = Image.open(imagePath)
 
-	#Grey the image
+	# Grey the image
 	im = ImageOps.grayscale(im)
 
 	# This size puts us at 8125 characters and a good size for
 	# reddit comments
+	# TODO: handle different aspect ratios
 	im = im.resize((120,55), Image.ANTIALIAS)
 	
 	# Use more characters?
@@ -64,4 +67,6 @@ def create_ascii(imagePath):
 	# Close the file handler
 	fh.close()
 	
-	#TODO: delete image
+	# Delete image
+	print 'Deleting %s' % imagePath
+	os.remove(imagePath)
