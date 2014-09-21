@@ -22,7 +22,7 @@ def downloadImage(imageUrl, localFileName):
 		print 'Downloading %s...' % localFileName
 		localFileName = directory + localFileName
 		with open(localFileName, 'wb') as fh:
-			for chunk in response.iter_content(1):
+			for chunk in response.iter_content(4096):
 				fh.write(chunk)
 		print 'Download complete!'
 	else:
