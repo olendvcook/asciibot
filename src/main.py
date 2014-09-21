@@ -8,7 +8,7 @@ print im.size
 im = ImageOps.grayscale(im)
 
 #this size puts us at 8125 characters and a good size for reddit comments
-im = im.resize((120,65), Image.ANTIALIAS)
+im = im.resize((120,55), Image.ANTIALIAS)
 
 #so the ascii looked really good when zoomed out so i wanted to keep it as an option
 #but it does look better with less characters when not zoomed in
@@ -45,16 +45,18 @@ for y in range (0, im.size[1]):
 				fh.write(' ')
 			
 		else:
-			if lum <= 51:
+			if lum <= 38:
 				fh.write('@')
-			elif lum <= 106:
-				fh.write('8')
-			elif lum <= 157:
+			elif lum <=75:
+				fh.write('&')
+			elif lum <= 98:
 				fh.write('o')
-			elif lum <= 183:
-				fh.write(':')
-			elif lum <= 204:
-				fh.write("'")
+			elif lum <= 157:
+				fh.write("|")
+			elif lum <= 210:
+				fh.write(":")
+			elif lum <= 224:
+				fh.write(".")
 			else:
 				fh.write(' ')
 	fh.write('\n')
