@@ -14,8 +14,6 @@ user_agent = ("ASCII Art converter 1.0 by /u/olendvcook, /u/fofofosho "
 reddit = praw.Reddit(user_agent=user_agent)
 reddit.login()
 
-cache = deque(maxlen=69)
-
 def downloadImage(imageUrl, localFileName):
 	directory = '../resources/'
 	print imageUrl
@@ -35,24 +33,28 @@ def downloadImage(imageUrl, localFileName):
 # Main loop
 while True:
 	subreddit = reddit.get_subreddit('botascii')
+	idCache = open('cache.txt','a+')
 
 	# TODO: add functionality to listen for ascii bot's name in comments
-	for submission in subreddit.get_new(limit=1):
+	for submission in subreddit.get_new():
 		commentFlag = False
+		idCache.seek(0)
 
-		if submission.id in cache:
+		if submission.id in idCache.read():
 			continue
 
 		if 'imgur.com/a/' in submission.url:
 			# Ignore galleries
 			continue
 		elif 'i.imgur.com/' in submission.url:
-			cache.append(submission.id)
+			idCache.seek(0,2)
+			idCache.write(submission.id + '\n')
 			imagePath = downloadImage(submission.url, submission.url.split('/')[-1].split('?')[0])
 			create_ascii(imagePath)
 			commentFlag = True
 		elif 'imgur.com/' in submission.url:
-			cache.append(submission.id)
+			idCache.seek(0,2)
+			idCache.write(submission.id + '\n')
 			imageHash = submission.url.split('/')[-1].split('?')[0] + '.jpg'
 			imagePath = downloadImage('i.imgur.com/' + imageHash, imageHash)
 			create_ascii(imagePath)
@@ -65,6 +67,7 @@ while True:
 			submission.add_comment(text)
 			print 'Posted ASCII!!!'
 
+	idCache.close()
 	print 'Sleep for a minute..'
 	sleep(60)
 
