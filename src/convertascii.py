@@ -12,8 +12,10 @@ def create_ascii(imagePath):
 
 	# This size puts us at 8125 characters and a good size for
 	# reddit comments
-	# TODO: handle different aspect ratios
-	im = im.resize((120,55), Image.ANTIALIAS)
+	if im.size[0] / im.size[1] < .60:
+		im = im.resize((100,55), Image.ANTIALIAS)
+	else:
+		im = im.resize((120,55), Image.ANTIALIAS)
 	
 	# Use more characters?
 	extraascii = False
