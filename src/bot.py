@@ -83,7 +83,7 @@ while True:
 		requested = False
 		commentCache.seek(0)
 
-		# Parse comments
+		# Parse comments and look for bot getting called
 		comments = praw.helpers.flatten_tree(submission.comments)
 		for comment in comments:
 			if 'bot_ascii, where art thou?' in comment.body.lower() and comment.id not in commentCache.read():
