@@ -77,13 +77,12 @@ while True:
 	subreddit = reddit.get_subreddit('botascii')
 	commentCache = open('commentCache.txt', 'a+')
 
-	# TODO: add functionality to listen for ascii bot's name in comments
 	for submission in subreddit.get_hot():
 		
 		requested = False
 		commentCache.seek(0)
 
-		# Parse comments
+		# Parse comments and look for bot getting called
 		comments = praw.helpers.flatten_tree(submission.comments)
 		for comment in comments:
 			if 'bot_ascii, where art thou?' in comment.body.lower() and comment.id not in commentCache.read():
