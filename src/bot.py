@@ -7,6 +7,8 @@ from convertascii import create_ascii
 
 # TODO: Multi-threaded to check if previous ascii posts have been downvoted, if so delete them
 
+# TODO: Make the console prints cleaner, more description
+
 # Required for reddit, description of who this is
 user_agent = ("ASCII Art converter 1.0 by /u/olendvcook, /u/fofofosho "
 	      "github.com/olendvcook/asciibot")

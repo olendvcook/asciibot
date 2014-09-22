@@ -20,6 +20,7 @@ sdist/
 var/
 *.jpg
 src/asciidata
+*.txt
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
