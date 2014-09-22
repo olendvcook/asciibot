@@ -35,28 +35,29 @@ def downloadImage(imageUrl, localFileName):
 # Main loop
 while True:
 	subreddit = reddit.get_subreddit('botascii')
-	
+
 	# TODO: add functionality to listen for ascii bot's name in comments
-	for submission in subreddit.get_new():
+	for submission in subreddit.get_new(limit=1):
 		commentFlag = False
 
 		if submission.id in cache:
 			continue
 
-		if 'http://imgur.com/a/' in submission.url:
-			# add id into cache
-			# html = requests.get(submission.url).text
-			# print html
-			# update comment flag		
+		if 'imgur.com/a/' in submission.url:
+			# Ignore galleries
 			continue
-		elif 'http://i.imgur.com/' in submission.url:
+		elif 'i.imgur.com/' in submission.url:
 			cache.append(submission.id)
 			imagePath = downloadImage(submission.url, submission.url.split('/')[-1].split('?')[0])
-
 			create_ascii(imagePath)
+			commentFlag = True
+		elif 'imgur.com/' in submission.url:
+			cache.append(submission.id)
+			imageHash = submission.url.split('/')[-1].split('?')[0] + '.jpg'
+			imagePath = downloadImage('i.imgur.com/' + imageHash, imageHash)
+			create_ascii(imagePath)
+			commentFlag = True
 
-			commentFlag = True			
-		
 		if commentFlag:
 			# Write out ASCII to post as code
 			with open('asciidata', 'r') as fh:
@@ -64,5 +65,6 @@ while True:
 			submission.add_comment(text)
 			print 'Posted ASCII!!!'
 
-		print 'Sleep for minute..'
-		sleep(60)
+	print 'Sleep for a minute..'
+	sleep(60)
+
