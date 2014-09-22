@@ -35,41 +35,52 @@ def downloadImage(imageUrl, localFileName):
 # Main loop
 while True:
 	subreddit = reddit.get_subreddit('botascii')
-	idCache = open('cache.txt','a+')
+	postCache = open('postCache.txt','a+')
+	commentCache = open('commentCache.txt', 'a+')
 
 	# TODO: add functionality to listen for ascii bot's name in comments
-	for submission in subreddit.get_new():
+	for submission in subreddit.get_hot():
 		commentFlag = False
-		idCache.seek(0)
+		requested = False
+		postCache.seek(0)
+		commentCache.seek(0)
 
-		if submission.id in idCache.read():
-			continue
+		# Parse comments
+		comments = praw.helpers.flatten_tree(submission.comments)
+		for comment in comments:
+			if 'bot_ascii, where art thou?' in comment.body.lower() and comment.id not in commentCache.read():
+				requested = True
+				commentCache.write(comment.id + '\n')
+		if requested:
+			if submission.id in postCache.read():
+				continue
 
-		if 'imgur.com/a/' in submission.url:
-			# Ignore galleries
-			continue
-		elif 'i.imgur.com/' in submission.url:
-			idCache.seek(0,2)
-			idCache.write(submission.id + '\n')
-			imagePath = downloadImage(submission.url, submission.url.split('/')[-1].split('?')[0])
-			create_ascii(imagePath)
-			commentFlag = True
-		elif 'imgur.com/' in submission.url:
-			idCache.seek(0,2)
-			idCache.write(submission.id + '\n')
-			imageHash = submission.url.split('/')[-1].split('?')[0] + '.jpg'
-			imagePath = downloadImage('i.imgur.com/' + imageHash, imageHash)
-			create_ascii(imagePath)
-			commentFlag = True
+			if 'imgur.com/a/' in submission.url:
+				# Ignore galleries
+				continue
+			elif 'i.imgur.com/' in submission.url:
+				postCache.seek(0,2)
+				postCache.write(submission.id + '\n')
+				imagePath = downloadImage(submission.url, submission.url.split('/')[-1].split('?')[0])
+				create_ascii(imagePath)
+				commentFlag = True
+			elif 'imgur.com/' in submission.url:
+				postCache.seek(0,2)
+				postCache.write(submission.id + '\n')
+				imageHash = submission.url.split('/')[-1].split('?')[0] + '.jpg'
+				imagePath = downloadImage('i.imgur.com/' + imageHash, imageHash)
+				create_ascii(imagePath)
+				commentFlag = True
 
-		if commentFlag:
-			# Write out ASCII to post as code
-			with open('asciidata', 'r') as fh:
-				text = fh.read()
-			submission.add_comment(text)
-			print 'Posted ASCII!!!'
+			if commentFlag:
+				# Write out ASCII to post as code
+				with open('asciidata', 'r') as fh:
+					text = fh.read()
+				comment.reply(text)
+				print 'Posted ASCII!!!'
 
-	idCache.close()
+	commentCache.close()
+	postCache.close()
 	print 'Sleep for a minute..'
 	sleep(60)
 
